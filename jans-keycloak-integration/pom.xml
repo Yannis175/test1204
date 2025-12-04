@@ -46,7 +46,7 @@
       <resteasy.version>6.2.4.Final</resteasy.version>
       <typesafe-config.version>1.4.3</typesafe-config.version>
       <openapi-generator-plugin.version>7.2.0</openapi-generator-plugin.version>
-      <jackson-datatype-jsr310.version>2.16.1</jackson-datatype-jsr310.version>
+      <jackson-datatype-jsr310.version>2.20.1</jackson-datatype-jsr310.version>
       <jackson-databind.version>2.16.1</jackson-databind.version>
       <sonar.projectKey>JanssenProject_keycloak-integ</sonar.projectKey>
       <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
