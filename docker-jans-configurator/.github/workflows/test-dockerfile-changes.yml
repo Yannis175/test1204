@@ -1,0 +1,90 @@
+name: Test Docker Configurator
+
+on:
+  pull_request:
+    paths:
+      - 'docker-jans-configurator/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docker-jans-configurator/**'
+
+jobs:
+  test-dockerfile:
+    name: Validate Dockerfile and Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-cov
+      
+      - name: Run Dockerfile validation tests
+        working-directory: docker-jans-configurator
+        run: |
+          pytest tests/test_dockerfile.py -v
+      
+      - name: Run requirements validation tests
+        working-directory: docker-jans-configurator
+        run: |
+          pytest tests/test_requirements.py -v
+      
+      - name: Run settings validation tests
+        working-directory: docker-jans-configurator
+        run: |
+          pytest tests/test_settings.py -v
+  
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        working-directory: docker-jans-configurator
+        run: |
+          pip install pytest pytest-cov
+          # Install other required dependencies for bootstrap tests
+          pip install click cryptography
+      
+      - name: Run unit tests with coverage
+        working-directory: docker-jans-configurator
+        run: |
+          pytest tests/ -m "not integration" --cov=scripts --cov-report=xml --cov-report=term-missing
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: docker-jans-configurator/coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  hadolint:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker-jans-configurator/Dockerfile
+          config: docker-jans-configurator/.hadolint.yaml
